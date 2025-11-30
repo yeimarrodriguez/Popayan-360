@@ -1,127 +1,631 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Popayán 360°</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popayán 360 - Descubre la Ciudad Blanca</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
 
-  <!-- Bulma CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+        body {
+            font-family: 'Comic Neue', cursive;  
+            line-height: 1.6;
+            color: #4a638e;
+            background: #f7fafc;
+        }
 
-  <link rel="stylesheet" href="styles.css">
+        header {
+            background: #000000;
+            color: white;
+            padding: 2.5rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 0.6rem;
+            text-align: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        nav {
+            background: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: #111823;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: #4651a1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .content {
+            padding: 2rem 0;
+        }
+
+        .category-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .category-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .category-title {
+            color: #1a202c;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: 800;
+        }
+
+        .places-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .place-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid #e2e8f0;
+        }
+
+        .place-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .place-image {
+            width: 100%;
+            height: 250px;
+            background: #edf2f7;
+            overflow: hidden;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        .place-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+
+        .place-content {
+            padding: 1.5rem;
+        }
+
+        .place-name {
+            color: #1a202c;
+            font-size: 1.5rem;
+            margin-bottom: 0.7rem;
+            font-weight: 700;
+        }
+
+        .place-description {
+            color: #000000;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .place-location {
+            color: #000f25;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .place-rating {
+            color: #ffd700;
+            margin-top: 0.7rem;
+            font-size: 1.1rem;
+        }
+
+        .map-button {
+            display: inline-block;
+            background: #000000;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .map-button:hover {
+            background: #294c89;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        footer {
+            background: #1a202c;
+            color: white;
+            text-align: center;
+            padding: 2.5rem 0;
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .places-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-container {
+                justify-content: center;
+            }
+
+            .nav-btn {
+                font-size: 0.85rem;
+                padding: 0.6rem 1.2rem;
+            }
+        }
+    </style>
 </head>
-
 <body>
-
-<nav class="navbar is-white">
-  <div class="navbar-brand">
-    <a class="navbar-item title is-4">Popayán 360°</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section class="hero is-medium">
-  <div class="hero-body">
-    <div class="container">
-      <h1 class="title is-3">Explora Popayán</h1>
-      <h2 class="subtitle">Restaurantes, vida nocturna, planes, rutas seguras y más</h2>
-
-      <div class="field has-addons">
-        <div class="control is-expanded">
-          <input id="searchInput" class="input" type="text" placeholder="Buscar lugares o eventos...">
+    <header>
+        <div class="container">
+            <h1>Popayán 360</h1>
+            <p class="subtitle">Descubre los mejores lugares de la Ciudad Blanca</p>
         </div>
-        <div class="control">
-          <button class="button is-primary" onclick="searchPlaces()">Buscar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CATEGORÍAS -->
-<section class="section">
-  <div class="container">
-    <h3 class="title is-4">Categorías</h3>
-
-    <div class="columns is-multiline">
-      <div onclick="filterCategory('restaurant')" class="column is-one-quarter">
-        <div class="card category-card"><div class="card-content has-text-centered">Restaurantes</div></div>
-      </div>
-
-      <div onclick="filterCategory('discoteca')" class="column is-one-quarter">
-        <div class="card category-card"><div class="card-content has-text-centered">Discotecas</div></div>
-      </div>
-
-      <div onclick="filterCategory('cafe')" class="column is-one-quarter">
-        <div class="card category-card"><div class="card-content has-text-centered">Cafeterías</div></div>
-      </div>
-
-      <div onclick="filterCategory('rapida')" class="column is-one-quarter">
-        <div class="card category-card"><div class="card-content has-text-centered">Comida rápida</div></div>
-      </div>
-
-      <div onclick="filterCategory('mirador')" class="column is-one-quarter">
-        <div class="card category-card"><div class="card-content has-text-centered">Miradores</div></div>
-      </div>
-
-      <div onclick="filterCategory('museo')" class="column is-one-quarter">
-        <div class="card category-card"><div class="card-content has-text-centered">Museos</div></div>
-      </div>
-
-      <div onclick="showEvents()" class="column is-one-quarter">
-        <div class="card category-card"><div class="card-content has-text-centered">Eventos</div></div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- MAPA -->
-<section class="section">
-  <div class="container">
-    <h3 class="title is-4">Mapa interactivo</h3>
-    <button class="button is-small is-info" onclick="showSafeRoutes()">Mostrar rutas seguras</button>
-    <div id="map"></div>
-
-    <h3 class="title is-4" style="margin-top:2rem;">Lugares</h3>
-    <div id="placesList"></div>
-  </div>
-</section>
-
-<!-- EVENTOS -->
-<section id="eventsSection" class="section is-hidden">
-  <div class="container">
-    <h3 class="title is-4">Eventos en Popayán</h3>
-    <div id="eventsList"></div>
-  </div>
-</section>
-
-<!-- FICHA DETALLADA -->
-<div id="modalInfo" class="modal">
-  <div class="modal-background" onclick="closeModal()"></div>
-  <div class="modal-card">
-    <header class="modal-card-head">
-      <p id="modalTitle" class="modal-card-title"></p>
-      <button class="delete" onclick="closeModal()"></button>
     </header>
-    <section class="modal-card-body">
-      <img id="modalImg" style="border-radius:10px; margin-bottom:1rem;" width="100%">
-      <p id="modalDesc"></p>
-      <p><strong>Horario: </strong><span id="modalHorario"></span></p>
-      <p><strong>Precio promedio: </strong><span id="modalPrecio"></span></p>
-      <p><strong>Dirección: </strong><span id="modalDir"></span></p>
-    </section>
-    <footer class="modal-card-foot">
-      <button id="modalMapBtn" class="button is-primary">Ver en mapa</button>
+
+    <nav>
+        <div class="container">
+            <div class="nav-container">
+                <button class="nav-btn active" onclick="showCategory('restaurantes')">Restaurantes</button>
+                <button class="nav-btn" onclick="showCategory('discotecas')">Discotecas</button>
+                <button class="nav-btn" onclick="showCategory('comida-rapida')">Comida Rápida</button>
+                <button class="nav-btn" onclick="showCategory('cafeterias')">Cafeterías</button>
+                <button class="nav-btn" onclick="showCategory('postres')">Postres</button>
+                <button class="nav-btn" onclick="showCategory('turisticos')">Turísticos</button>
+                <button class="nav-btn" onclick="showCategory('recreacion')">Recreación</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content">
+        <div class="container">
+            <!-- Restaurantes -->
+            <div id="restaurantes" class="category-section active">
+                <h2 class="category-title">Restaurantes</h2>
+                <div class="places-grid">
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://lh3.googleusercontent.com/gps-cs-s/AG0ilSxUiD-qLg_sU-_MQNRCMoF8W73mXrxW3IWzmhy7n9ntG1XiXTINwcqRj_C109coWGuqGE7hqixROiuUXJxPsMneOGUofmCurVSDpHbO11vXcANMu0Vgr572zgLotoBpg6U2HsRLGQ=s1360-w1360-h1020"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">La Cosecha Parrillada</h3>
+                            <p class="place-description">Excelente parrilla con carnes de primera calidad. Ambiente acogedor y atención personalizada. Ideal para compartir en familia.</p>
+                            <p class="place-location">📍 Popayán, Centro</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=La+Cosecha+Parrillada+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://media-cdn.tripadvisor.com/media/photo-m/1280/18/42/f4/81/photo2jpg.jpg"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Carantanta</h3>
+                            <p class="place-description">Restaurante de comida típica caucana con recetas tradicionales. Especialidad en platos autóctonos preparados con ingredientes frescos.</p>
+                            <p class="place-location">📍 Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Carantanta+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://img.restaurantguru.com/r8b9-Paladares-a-la-Parrilla-design.jpg"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Paladares a la Parrilla</h3>
+                            <p class="place-description">Especialistas en carnes asadas y parrilladas. Gran variedad de cortes y preparaciones, ambiente familiar y precios accesibles.</p>
+                            <p class="place-location">📍 Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Paladares+a+la+Parrilla+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://scontent.feoh1-1.fna.fbcdn.net/v/t39.30808-6/489957494_1161200689351199_7858835894402097327_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=tdEVZi6TQdsQ7kNvwFRRi4B&_nc_oc=Adl1fnHL0LIYwuU3aQtIItR5mEEQmJJuGmxrllJhg3ut52Zjrd8Bq3goAD8dj3qdbWQ&_nc_zt=23&_nc_ht=scontent.feoh1-1.fna&_nc_gid=Ey3oR8NnN9VUZoWTrJ_dqA&oh=00_AfjkSY4EXWgnqB6h1F-gEI6ok3SUsx2Raj_nvubWS464PA&oe=69313B81"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Chilango</h3>
+                            <p class="place-description">Auténtica comida mexicana con sabores intensos y picantes. Tacos, burritos y quesadillas preparados al momento. Ambiente casual y divertido.</p>
+                            <p class="place-location">📍 Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Chilango+Restaurante+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://scontent.feoh1-1.fna.fbcdn.net/v/t39.30808-6/475854149_945491104357820_1190280975396885696_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=mkiBZYOk0XEQ7kNvwHjPgh3&_nc_oc=AdlRHEM87Kt-PWI01lpV2eZ1Q-zM-PT3_8kTt6ZvlyRYL3KjtRlmN2ewt6-HDrM74rY&_nc_zt=23&_nc_ht=scontent.feoh1-1.fna&_nc_gid=mH6esI-rF9owGCIJJ7SLWw&oh=00_Afgyt91KHSrXo5QsCimhY1WKv9QGuKgS0grkxNWN2arOOQ&oe=69315D1D"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Don Churrasco</h3>
+                            <p class="place-description">Reconocido por sus churrascos y cortes argentinos. Carnes tiernas y jugosas acompañadas de guarniciones deliciosas.</p>
+                            <p class="place-location">📍 Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Don+Churrasco+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://static.wixstatic.com/media/656acf_71774e13179d4ee9bedeba102625859c~mv2.png"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Mora Castilla</h3>
+                            <p class="place-description">Restaurante de comida típica payanesa con más de 60 años de tradición. Ideal para probar la gastronomía local en un ambiente colonial.</p>
+                            <p class="place-location">📍 Calle 5 # 5-59, Centro</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Mora+Castilla+Calle+5+5-59+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discotecas -->
+            <div id="discotecas" class="category-section">
+                <h2 class="category-title">Discotecas</h2>
+                <div class="places-grid">
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://scontent.feoh1-1.fna.fbcdn.net/v/t39.30808-6/474539245_122179129400066599_5024599488803988053_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=a5f93a&_nc_ohc=ozHV1wVuGMEQ7kNvwFHQQZ3&_nc_oc=AdmB3O9UzK7bILce7ha3gX4ref_RliYWMb369YHJVuW-1pWasNV5xsxCFN55PsU0UWU&_nc_zt=23&_nc_ht=scontent.feoh1-1.fna&_nc_gid=x_qp25YAFZ9NciugyKErRg&oh=00_AfiZOuU-Uu42-7V882sPfJ8eZ8nkyGvJJtfrWVNMuEMb2g&oe=693139A7"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">212</h3>
+                            <p class="place-description">Discoteca moderna con música electrónica y los mejores DJs de la región. Ambiente joven y energético para bailar toda la noche.</p>
+                            <p class="place-location">📍 Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Discoteca+212+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://scontent.feoh1-1.fna.fbcdn.net/v/t39.30808-6/495568726_1097768749051971_5432172214333987432_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=_DQO2IgnPVsQ7kNvwGzgelD&_nc_oc=Adm_eCUbwue1GIFNRFjQWRy4jYCwdnhtn2hqY5yVMD5ne_mtzrCINWZPPd1ZlcyxFuU&_nc_zt=23&_nc_ht=scontent.feoh1-1.fna&_nc_gid=uUh2PMXMF4pcee0Lbs30Tw&oh=00_Afiozmn5gwju1nxgsJt8YS4RrTgRK8RCBxmEymuF-Aaftg&oe=693141DE"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Land Disco</h3>
+                            <p class="place-description">Gran espacio con pista amplia y sistema de sonido de última generación. Variedad musical y shows en vivo los fines de semana.</p>
+                            <p class="place-location">📍 Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Land+Disco+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKk5bNiktpXdpdhADRu3cnF6sryP2rCorcQw&s"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Casa Budweiser</h3>
+                            <p class="place-description">Bar y discoteca con terraza al aire libre. Cerveza fría, buena música y ambiente relajado. Ideal para empezar la noche.</p>
+                            <p class="place-location">📍 Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Casa+Budweiser+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://scontent.feoh1-1.fna.fbcdn.net/v/t39.30808-6/578248080_1256097383218403_5577512351618137031_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=OV-vMEG47dsQ7kNvwFqbJtn&_nc_oc=Adnc07uqgD4nZpOermeAwN6R0l4gvkoKgzOUzgyUUZrOHykE2r93AKQ4Lg256bGknFg&_nc_zt=23&_nc_ht=scontent.feoh1-1.fna&_nc_gid=b9hrWquQymuM8f_SglW3ew&oh=00_AfgI4iMY26kA42u19YN3eei5m1P_tmNXYua05uZoIZwDdg&oe=693152B4"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Sandunga</h3>
+                            <p class="place-description">Especializado en salsa y música latina. Ambiente tropical y pista de baile perfecta para los amantes del ritmo caribeño.</p>
+                            <p class="place-location">📍 Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Sandunga+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://scontent.feoh1-1.fna.fbcdn.net/v/t39.30808-6/414956406_896985542428492_2079905062856657187_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=K-CddZO69RkQ7kNvwEyN7_b&_nc_oc=Adl1E78ph5fw9NBxhksO4yTksGvCxKwXykfPPUnU0Ewl9HJY4zL2a8Lgfsus-YOb-Z0&_nc_zt=23&_nc_ht=scontent.feoh1-1.fna&_nc_gid=MFr5ymLoXV3qF_oSsT88uw&oh=00_AfhJ20bGGAhZ2euPC_Cl0j5DaU2mqWF-Ck9IAn7tNYUQQg&oe=69315E59"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Monastery</h3>
+                            <p class="place-description">Bar temático con decoración única tipo monasterio. Cocteles especiales, música alternativa y ambiente bohemio.</p>
+                            <p class="place-location">📍 Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Monastery+Bar+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comida Rápida -->
+            <div id="comida-rapida" class="category-section">
+                <h2 class="category-title">Comida Rápida</h2>
+                <div class="places-grid">
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://scontent.feoh1-1.fna.fbcdn.net/v/t39.30808-6/337841773_527105339627086_2851822191330839377_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=QSHeXIaICusQ7kNvwHuUEiP&_nc_oc=Adk8mw2k7WeDg7aKaN-kcy4yhaXEfJGtYRCE1j_l2d3OlFgVejSGEEpbZWjgsgJMcos&_nc_zt=23&_nc_ht=scontent.feoh1-1.fna&_nc_gid=CUe8RxzQ4u0RZJCS8vixKw&oh=00_Afh9jiT3vWbDOzWsDPu41J7ouJ80TLOrZiqL6InchFcvew&oe=693152C6"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Go Papa</h3>
+                            <p class="place-description">Especialistas en salchipapas y preparaciones únicas. Ingredientes frescos y sabores innovadores. Rápido servicio y precios justos.</p>
+                            <p class="place-location">📍 Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Go+Papa+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://img.restaurantguru.com/r217-burger-LUNA-ROJA-2023-04.jpg"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Luna Roja</h3>
+                            <p class="place-description">Comida rápida con toque gourmet. Hamburguesas, hot dogs y más con ingredientes de calidad. Ambiente juvenil y moderno.</p>
+                            <p class="place-location">📍 Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Luna+Roja+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://d3mhsvpkkc7vdq.cloudfront.net/kokorikocomco/686ede63ca436.webp"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Kokoriko</h3>
+                            <p class="place-description">Cadena colombiana especializada en pollo. Menús económicos y variados, ideal para comidas rápidas y familiares.</p>
+                            <p class="place-location">📍 Calle 5 # 9-23, Centro Comercial</p>
+                            <div class="place-rating">⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Kokoriko+Calle+5+9-23+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://scontent.feoh1-1.fna.fbcdn.net/v/t39.30808-6/482251291_953573146886296_5939587406295760844_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=HniCZBnZYPoQ7kNvwGWVSLN&_nc_oc=AdnlqK23GQ1PnGZY-8WFZE3GO61giE0e8utorvaN8meB-66hCyv3Vro5fXyVGDgYQGA&_nc_zt=23&_nc_ht=scontent.feoh1-1.fna&_nc_gid=w3Q7nZlq6r85uhimuYTarg&oh=00_AfhxKBYDMOGdN6xgMKeQSHopzBD5l4tYO6GWPTUvjiXj7Q&oe=69314960"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Mr Maduro</h3>
+                            <p class="place-description">Productos a base de platano aborrajados unicos, canastas de patacon verde, madurito y mucho mas. Mas de 17 sabores y puedes combinarlos como tu quieras.</p>
+                            <p class="place-location">📍 Calle 7 #10A 15. Barrio Valencia Popayán, Colombia</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Mr+Maduro" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cafeterías -->
+            <div id="cafeterias" class="category-section">
+                <h2 class="category-title">Cafeterías</h2>
+                <div class="places-grid">
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://campanariopopayan.com/wp-content/uploads/2025/03/juan-valdez-campanario.jpg"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Juan Valdez Café</h3>
+                            <p class="place-description">Café 100% colombiano de exportación. Ambiente acogedor para trabajar o reunirse. Variedad de bebidas calientes y frías con repostería.</p>
+                            <p class="place-location">📍 Centro Comercial, Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Juan+Valdez+Café+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://campanariopopayan.com/wp-content/uploads/2025/03/cafe-cauca-campanario.jpg"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Café Cauca</h3>
+                            <p class="place-description">Cafetería local con café cultivado en la región. Métodos de preparación especializados y ambiente tradicional payanés.</p>
+                            <p class="place-location">📍 Centro, Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Café+Cauca+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Postres -->
+            <div id="postres" class="category-section">
+                <h2 class="category-title">Postres</h2>
+                <div class="places-grid">
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://scontent.cdninstagram.com/v/t51.75761-15/499576705_17861307024408424_7944636059900048110_n.jpg?stp=dst-jpegr_e35_tt6&_nc_cat=110&ig_cache_key=MzYzNDY4MTUzMDQxMDQwNzM2MA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTgwMC5oZHIuQzMifQ%3D%3D&_nc_ohc=6d3RJxsyQ0gQ7kNvwGSnWyT&_nc_oc=Adn0KppBe0jcTem2l3Ns63V6TdcyRMVwbWh4YTmI_x0kujIBalJtMcXfuUrJ6eKR48Q&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&se=-1&_nc_ht=scontent.cdninstagram.com&_nc_gid=AKtY99C5Mi6sFZqUORrJBA&oh=00_AfgvZIUbkfbN57ynk-3FicKItu-oq1pw45sjDPlG5NuXrg&oe=69316947"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Friends kuki</h3>
+                            <p class="place-description">Repostería artesanal con tortas personalizadas y cupcakes decorados. Ideal para celebraciones y momentos dulces con amigos.</p>
+                            <p class="place-location">📍 Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Friends+Cukis+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://d2nagnwby8accc.cloudfront.net/companies/logos/632e320f-1718-43bc-8c24-f28909dab7fe.webp"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Biscuit City</h3>
+                            <p class="place-description">Galletas artesanales y postres horneados frescos cada día. Variedades únicas y sabores que enamoran. Perfectos para regalar.</p>
+                            <p class="place-location">📍 Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Biscuit+City+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://images.rappi.com/restaurants_background/2-1738935743602.jpg"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Antojando</h3>
+                            <p class="place-description">Fresas con crema, helados artesanales, waffles, crepas y más. Sabores innovadores y presentaciones creativas. Ambiente juvenil y divertido.</p>
+                            <p class="place-location">📍 Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Antojando+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lugares Turísticos -->
+            <div id="turisticos" class="category-section">
+                <h2 class="category-title">Lugares Turísticos</h2>
+                <div class="places-grid">
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://www.semana.com/resizer/v2/PNIJOGWLBJEWVJCDREXPMV37DI.jpg?auth=497a64ac0818b6ffef145a393320855181571a518aee9fcba19f5b6db681504c&smart=true&quality=75&width=768&fitfill=false"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">El Morro</h3>
+                            <p class="place-description">Pirámide precolombina con vista panorámica de la ciudad. Sitio arqueológico con estatua del fundador Sebastián de Belalcázar. Imperdible en Popayán.</p>
+                            <p class="place-location">📍 Cerro de Tulcán, zona norte</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Morro+de+Tulcán+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/11/bd/3a/0f/rincon-payanes.jpg?w=1200&h=-1&s=1"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Pueblito Patojo</h3>
+                            <p class="place-description">Réplica de pueblo colonial en miniatura con arquitectura tradicional. Espacio cultural y turístico ideal para fotos y paseos familiares.</p>
+                            <p class="place-location">📍 Popayán</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Pueblito+Patojo+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://live.staticflickr.com/4358/35967135633_3d7cd5464a_b.jpg"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Parque Caldas</h3>
+                            <p class="place-description">Corazón del centro histórico, rodeado de edificaciones coloniales. Lugar de encuentro tradicional con la Torre del Reloj y edificios emblemáticos.</p>
+                            <p class="place-location">📍 Centro Histórico</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Parque+Caldas+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://www.semana.com/resizer/v2/MCEIWASIBRDWDPN35BJXPHTZWU.jpg?auth=fd952d19481b08a66926eb756f37c67ed933d598141e8807dfd3835e1227c0e1&smart=true&quality=75&width=768&height=432"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Puente del Humilladero</h3>
+                            <p class="place-description">Puente colonial construido en 1873, símbolo de la ciudad. Arquitectura histórica y punto perfecto para fotografías.</p>
+                            <p class="place-location">📍 Carrera 6 con Calle 2</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Puente+del+Humilladero+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Catedral-Bas%C3%ADlica-de-Nuestra-Se%C3%B1ora-de-la-Asunci%C3%B3n-de-Popay%C3%A1n-Colombia-1.jpg/1200px-Catedral-Bas%C3%ADlica-de-Nuestra-Se%C3%B1ora-de-la-Asunci%C3%B3n-de-Popay%C3%A1n-Colombia-1.jpg"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Catedral Basílica</h3>
+                            <p class="place-description">Catedral neoclásica del siglo XVIII, una de las más importantes de Colombia. Arquitectura impresionante y gran valor histórico.</p>
+                            <p class="place-location">📍 Costado norte del Parque Caldas</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Catedral+Basílica+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recreación -->
+            <div id="recreacion" class="category-section">
+                <h2 class="category-title">Recreación</h2>
+                <div class="places-grid">
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://campanariopopayan.com/wp-content/uploads/2025/03/historia-campanario-1.jpg"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Centro Comercial Campanario</h3>
+                            <p class="place-description">Principal centro comercial de la ciudad con cines, tiendas, zona de comidas y espacios de entretenimiento familiar.</p>
+                            <p class="place-location">📍 Calle 4 Norte # 6-60</p>
+                            <div class="place-rating">⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Centro+Comercial+Campanario+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://www.comfacauca.com/wp-content/uploads/toboganes.jpeg"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Pisoje</h3>
+                            <p class="place-description">Parque ecológico y recreativo con zonas verdes, senderos naturales y espacios para picnic. Perfecto para escapadas familiares en contacto con la naturaleza.</p>
+                            <p class="place-location">📍 Popayan</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Centro+Recreativa+Pisojé+de+COMFACAUCA" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://radionacional-v3.s3.amazonaws.com/s3fs-public/styles/portadas_relaciona_4_3/public/node/article/field_image/pp.jpg?h=6e972868&itok=6MVEirGf"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Museo de Historia Natural</h3>
+                            <p class="place-description">Museo universitario con colecciones de fauna, flora y minerales de la región. Visitas educativas y exposiciones temporales.</p>
+                            <p class="place-location">📍 Universidad del Cauca, Calle 2 # 1A-25</p>
+                            <div class="place-rating">⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Museo+de+Historia+Natural+Universidad+del+Cauca+Popayán" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                    <div class="place-card">
+                        <div class="place-image"><img src="https://campanariopopayan.com/wp-content/uploads/2025/03/play-point-campanario.jpg"></div>
+                        <div class="place-content">
+                            <h3 class="place-name">Play point</h3>
+                            <p class="place-description">Centro de entretenimiento con bolos, juegos arcade, billar y zona de comidas. Ideal para pasar un rato divertido con amigos o familia.</p>
+                            <p class="place-location">📍 Popayan</p>
+                            <div class="place-rating">⭐⭐⭐⭐⭐</div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Play+Point" target="_blank" class="map-button">📍 Ver en Google Maps</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Popayán 360 - Descubre la Ciudad Blanca</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Tu guía completa de lugares en Popayán</p>
+        </div>
     </footer>
-  </div>
-</div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="app.js"></script>
+    <script>
+        function showCategory(categoryId) {
+            // Ocultar todas las secciones
+            const sections = document.querySelectorAll('.category-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
 
+            // Remover clase active de todos los botones
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Mostrar la sección seleccionada
+            document.getElementById(categoryId).classList.add('active');
+
+            // Activar el botón correspondiente
+            event.target.classList.add('active');
+
+            // Scroll suave hacia el contenido
+            window.scrollTo({
+                top: 200,
+                behavior: 'smooth'
+            });
+        }
+    </script>
 </body>
 </html>
