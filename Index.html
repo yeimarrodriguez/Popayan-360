@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Popayán 360°</title>
+
+  <!-- Bulma CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<nav class="navbar is-white">
+  <div class="navbar-brand">
+    <a class="navbar-item title is-4">Popayán 360°</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero is-medium">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title is-3">Explora Popayán</h1>
+      <h2 class="subtitle">Restaurantes, vida nocturna, planes, rutas seguras y más</h2>
+
+      <div class="field has-addons">
+        <div class="control is-expanded">
+          <input id="searchInput" class="input" type="text" placeholder="Buscar lugares o eventos...">
+        </div>
+        <div class="control">
+          <button class="button is-primary" onclick="searchPlaces()">Buscar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORÍAS -->
+<section class="section">
+  <div class="container">
+    <h3 class="title is-4">Categorías</h3>
+
+    <div class="columns is-multiline">
+      <div onclick="filterCategory('restaurant')" class="column is-one-quarter">
+        <div class="card category-card"><div class="card-content has-text-centered">Restaurantes</div></div>
+      </div>
+
+      <div onclick="filterCategory('discoteca')" class="column is-one-quarter">
+        <div class="card category-card"><div class="card-content has-text-centered">Discotecas</div></div>
+      </div>
+
+      <div onclick="filterCategory('cafe')" class="column is-one-quarter">
+        <div class="card category-card"><div class="card-content has-text-centered">Cafeterías</div></div>
+      </div>
+
+      <div onclick="filterCategory('rapida')" class="column is-one-quarter">
+        <div class="card category-card"><div class="card-content has-text-centered">Comida rápida</div></div>
+      </div>
+
+      <div onclick="filterCategory('mirador')" class="column is-one-quarter">
+        <div class="card category-card"><div class="card-content has-text-centered">Miradores</div></div>
+      </div>
+
+      <div onclick="filterCategory('museo')" class="column is-one-quarter">
+        <div class="card category-card"><div class="card-content has-text-centered">Museos</div></div>
+      </div>
+
+      <div onclick="showEvents()" class="column is-one-quarter">
+        <div class="card category-card"><div class="card-content has-text-centered">Eventos</div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- MAPA -->
+<section class="section">
+  <div class="container">
+    <h3 class="title is-4">Mapa interactivo</h3>
+    <button class="button is-small is-info" onclick="showSafeRoutes()">Mostrar rutas seguras</button>
+    <div id="map"></div>
+
+    <h3 class="title is-4" style="margin-top:2rem;">Lugares</h3>
+    <div id="placesList"></div>
+  </div>
+</section>
+
+<!-- EVENTOS -->
+<section id="eventsSection" class="section is-hidden">
+  <div class="container">
+    <h3 class="title is-4">Eventos en Popayán</h3>
+    <div id="eventsList"></div>
+  </div>
+</section>
+
+<!-- FICHA DETALLADA -->
+<div id="modalInfo" class="modal">
+  <div class="modal-background" onclick="closeModal()"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p id="modalTitle" class="modal-card-title"></p>
+      <button class="delete" onclick="closeModal()"></button>
+    </header>
+    <section class="modal-card-body">
+      <img id="modalImg" style="border-radius:10px; margin-bottom:1rem;" width="100%">
+      <p id="modalDesc"></p>
+      <p><strong>Horario: </strong><span id="modalHorario"></span></p>
+      <p><strong>Precio promedio: </strong><span id="modalPrecio"></span></p>
+      <p><strong>Dirección: </strong><span id="modalDir"></span></p>
+    </section>
+    <footer class="modal-card-foot">
+      <button id="modalMapBtn" class="button is-primary">Ver en mapa</button>
+    </footer>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
